@@ -22,6 +22,7 @@ function love.load()
     }
 
     dustParticles = {}
+    maxDustParticles = 120
 
     for i, sprite in ipairs(car.sprites) do
         sprite:setFilter('nearest', 'nearest')
@@ -43,6 +44,11 @@ function love.update(dt)
     if love.mouse.isDown(1) and car.velocity.x < car.maxSpeed and carToMouse:Magnitude() > 60 then
         car.velocity.x = car.velocity.x + carToMouseNormalized.x * car.acceleration * dt
         car.velocity.y = car.velocity.y + carToMouseNormalized.y * car.acceleration * dt
+
+        if car.velocity:Magnitude() < 6 then
+            table.insert(dustParticles, #dustParticles + 1, Vector2:New{x = car.position.x - 8, y = car.position.y})
+            table.insert(dustParticles, #dustParticles + 1, Vector2:New{x = car.position.x + 8, y = car.position.y})
+        end
     end
 
     if math.abs(math.deg(Vector2.FindAngleRadians(car.velocity, carToMouse))) > 30 and car.velocity:Magnitude() > 4 then
@@ -50,8 +56,10 @@ function love.update(dt)
         table.insert(dustParticles, #dustParticles + 1, Vector2:New{x = car.position.x + 8, y = car.position.y})
     end
 
-    if #dustParticles > 60 then
-        table.remove(dustParticles, 1)
+    if #dustParticles > maxDustParticles then
+        for i = 1, #dustParticles - maxDustParticles, 1 do
+            table.remove(dustParticles, i)
+        end
     end
 end
 
