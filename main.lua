@@ -27,6 +27,8 @@ function love.load()
     for i, sprite in ipairs(car.sprites) do
         sprite:setFilter('nearest', 'nearest')
     end
+
+    love.mouse.setVisible(false)
 end
 
 function love.update(dt)
@@ -66,9 +68,12 @@ end
 function love.draw()
     love.graphics.setBackgroundColor(.3, .3, .3, 1)
 
+    love.graphics.setColor(.4, .4, .4)
+    love.graphics.circle('fill', love.mouse.getX(), love.mouse.getY(), 15, 15)
+
     for i, dust in ipairs(dustParticles) do
         love.graphics.setColor(.2, .2, .2)
-        love.graphics.rectangle('fill', dust.x, dust.y, 5, 5)
+        love.graphics.rectangle('fill', dust.x, dust.y, 6, 6)
     end
 
     for i, sprite in ipairs(car.sprites) do
