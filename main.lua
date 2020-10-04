@@ -18,7 +18,7 @@ function love.load()
         rotation = 0,
         acceleration = 40,
         friction = 4,
-        maxSpeed = 200 
+        maxSpeed = 200
     }
 
     dustParticles = {}
@@ -48,14 +48,12 @@ function love.update(dt)
         car.velocity.y = car.velocity.y + carToMouseNormalized.y * car.acceleration * dt
 
         if car.velocity:Magnitude() < 6 then
-            table.insert(dustParticles, #dustParticles + 1, Vector2:New{x = car.position.x - 8, y = car.position.y})
-            table.insert(dustParticles, #dustParticles + 1, Vector2:New{x = car.position.x + 8, y = car.position.y})
+            addDust()
         end
     end
 
     if math.abs(math.deg(Vector2.FindAngleRadians(car.velocity, carToMouse))) > 30 and car.velocity:Magnitude() > 4 then
-        table.insert(dustParticles, #dustParticles + 1, Vector2:New{x = car.position.x - 8, y = car.position.y})
-        table.insert(dustParticles, #dustParticles + 1, Vector2:New{x = car.position.x + 8, y = car.position.y})
+        addDust()
     end
 
     if #dustParticles > maxDustParticles then
@@ -63,6 +61,11 @@ function love.update(dt)
             table.remove(dustParticles, i)
         end
     end
+end
+
+function addDust()
+    table.insert(dustParticles, #dustParticles + 1, Vector2:New{x = car.position.x - carToMouseNormalized.y * 8, y = car.position.y - -carToMouseNormalized.x * 8})
+    table.insert(dustParticles, #dustParticles + 1, Vector2:New{x = car.position.x - -carToMouseNormalized.y * 8, y = car.position.y - carToMouseNormalized.x * 8})
 end
 
 function love.draw()
@@ -80,4 +83,6 @@ function love.draw()
         love.graphics.setColor(1,1,1,1)
         love.graphics.draw(sprite, car.position.x, car.position.y - (i * 3), car.rotation, 3, 3, 8, 8)
     end
+
+    love.graphics.print(math.deg(car.rotation))
 end
