@@ -21,12 +21,15 @@ function love.load()
         maxSpeed = 200
     }
 
-    dustParticles = {}
-    maxDustParticles = 120
-
     for i, sprite in ipairs(car.sprites) do
         sprite:setFilter('nearest', 'nearest')
     end
+
+    skidMarks = {}
+    maxSkidMarks = 120
+
+    dustParticles = {}
+    maxDustParticles = 60
 
     love.mouse.setVisible(false)
 end
@@ -48,12 +51,20 @@ function love.update(dt)
         car.velocity.y = car.velocity.y + carToMouseNormalized.y * car.acceleration * dt
 
         if car.velocity:Magnitude() < 6 then
+            addSkidMarks()
             addDust()
         end
     end
 
-    if math.abs(math.deg(Vector2.FindAngleRadians(car.velocity, carToMouse))) > 30 and car.velocity:Magnitude() > 4 then
+    if math.abs(math.deg(Vector2.FindAngleRadians(car.velocity, carToMouse))) > 20 and car.velocity:Magnitude() > 4 then
+        addSkidMarks()
         addDust()
+    end
+
+    if #skidMarks > maxSkidMarks then
+        for i = 1, #skidMarks - maxSkidMarks, 1 do
+            table.remove(skidMarks, i)
+        end
     end
 
     if #dustParticles > maxDustParticles then
@@ -61,11 +72,41 @@ function love.update(dt)
             table.remove(dustParticles, i)
         end
     end
+
+    for i, dust in ipairs(dustParticles) do
+        dust.position.y = dust.position.y - .6
+        dust.scale = dust.scale + .02
+        dust.opacity = dust.opacity - .01
+
+        if dust.opacity <= 0 then
+            table.remove(dustParticles, 1)
+        end
+    end
+end
+
+Dust =
+{
+    position = Vector2:New(),
+    scale = 1,
+    opacity = 1
+}
+
+function Dust:New(dust)
+    local dust = dust or {}
+    setmetatable(dust, self)
+    self.__index = self
+
+    return dust
 end
 
 function addDust()
-    table.insert(dustParticles, #dustParticles + 1, Vector2:New{x = car.position.x - carToMouseNormalized.y * 8, y = car.position.y - -carToMouseNormalized.x * 8})
-    table.insert(dustParticles, #dustParticles + 1, Vector2:New{x = car.position.x - -carToMouseNormalized.y * 8, y = car.position.y - carToMouseNormalized.x * 8})
+    table.insert(dustParticles, #dustParticles + 1, Dust:New{position = Vector2:New{x = car.position.x - carToMouseNormalized.y * 8, y = car.position.y - -carToMouseNormalized.x * 8}})
+    table.insert(dustParticles, #dustParticles + 1, Dust:New{position = Vector2:New{x = car.position.x - -carToMouseNormalized.y * 8, y = car.position.y - carToMouseNormalized.x * 8}})
+end
+
+function addSkidMarks()
+    table.insert(skidMarks, #skidMarks + 1, Vector2:New{x = car.position.x - carToMouseNormalized.y * 8, y = car.position.y - -carToMouseNormalized.x * 8})
+    table.insert(skidMarks, #skidMarks + 1, Vector2:New{x = car.position.x - -carToMouseNormalized.y * 8, y = car.position.y - carToMouseNormalized.x * 8})
 end
 
 function love.draw()
@@ -74,15 +115,19 @@ function love.draw()
     love.graphics.setColor(.4, .4, .4)
     love.graphics.circle('fill', love.mouse.getX(), love.mouse.getY(), 15, 15)
 
-    for i, dust in ipairs(dustParticles) do
+    for i, mark in ipairs(skidMarks) do
         love.graphics.setColor(.2, .2, .2)
-        love.graphics.rectangle('fill', dust.x, dust.y, 6, 6)
+        love.graphics.rectangle('fill', mark.x, mark.y, 6, 6)
+    end
+
+    for i, dust in ipairs(dustParticles) do
+        local initialSize = love.math.random(3, 6)
+        love.graphics.setColor(.6, .6, .6, dust.opacity)
+        love.graphics.rectangle('fill', dust.position.x, dust.position.y, initialSize * dust.scale, initialSize * dust.scale)
     end
 
     for i, sprite in ipairs(car.sprites) do
         love.graphics.setColor(1,1,1,1)
         love.graphics.draw(sprite, car.position.x, car.position.y - (i * 3), car.rotation, 3, 3, 8, 8)
     end
-
-    love.graphics.print(math.deg(car.rotation))
 end
