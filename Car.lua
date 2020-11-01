@@ -1,48 +1,47 @@
 Dust = require'Dust'
 Vector2 = require'Vector2'
 
-Car =
-{
-    sprites =
-    {
-        love.graphics.newImage("assets/car/01.png"),
-        love.graphics.newImage("assets/car/02.png"),
-        love.graphics.newImage("assets/car/03.png"),
-        love.graphics.newImage("assets/car/04.png"),
-        love.graphics.newImage("assets/car/05.png"),
-        love.graphics.newImage("assets/car/06.png"),
-        love.graphics.newImage("assets/car/07.png"),
-    },
-    sounds =
-    {
-        idle_engine = love.audio.newSource('assets/sounds/large/Idle_Engine.wav', 'static'),
-        rev_engine_loop = love.audio.newSource('assets/sounds/large/Rev_Loop.wav', 'static'),
-        skid_short_01 = love.audio.newSource('assets/sounds/large/Skid_Short.wav', 'static'),
-        skid_long = love.audio.newSource('assets/sounds/large/Skid_Long_01.wav', 'static'),
-    },
-    position = Vector2:New{ x = 400, y = 300 },
-    velocity = Vector2:New{x = 0, y = 0},
-    rotation = 0,
-    acceleration = 40,
-    friction = 4,
-    maxSpeed = 200,
-
-    skidMarks = {},
-    maxSkidMarks = 120,
-
-    dustParticles = {},
-    maxDustParticles = 45,
-
-    toMouse = Vector2:New(),
-    toMouseNormalized = Vector2:New(),
-
-    mouseButton = 0,
-}
+Car = {}
 
 function Car:New(initialPosition, mouseButton)
-    local car = {}
-    car.position = initialPosition
-    car.mouseButton = mouseButton
+    local car =
+    {
+        sprites =
+        {
+            love.graphics.newImage("assets/car/01.png"),
+            love.graphics.newImage("assets/car/02.png"),
+            love.graphics.newImage("assets/car/03.png"),
+            love.graphics.newImage("assets/car/04.png"),
+            love.graphics.newImage("assets/car/05.png"),
+            love.graphics.newImage("assets/car/06.png"),
+            love.graphics.newImage("assets/car/07.png"),
+        },
+        sounds =
+        {
+            idle_engine = love.audio.newSource('assets/sounds/large/Idle_Engine.wav', 'static'),
+            rev_engine_loop = love.audio.newSource('assets/sounds/large/Rev_Loop.wav', 'static'),
+            skid_short_01 = love.audio.newSource('assets/sounds/large/Skid_Short.wav', 'static'),
+            skid_long = love.audio.newSource('assets/sounds/large/Skid_Long_01.wav', 'static'),
+        },
+        position = initialPosition,
+        velocity = Vector2:New{x = 0, y = 0},
+        rotation = 0,
+        acceleration = 40,
+        friction = 4,
+        maxSpeed = 200,
+
+        skidMarks = {},
+        maxSkidMarks = 120,
+
+        dustParticles = {},
+        maxDustParticles = 45,
+
+        toMouse = Vector2:New(),
+        toMouseNormalized = Vector2:New(),
+
+        mouseButton = mouseButton
+    }
+
     setmetatable(car, self)
     self.__index = self
 
