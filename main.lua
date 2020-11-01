@@ -19,7 +19,9 @@ end
 function love.update(dt)
     for _, car in pairs(cars) do
         car:updatePosition(dt)
+    end
 
+    for _, car in pairs(cars) do
         car:updateSkidMarks()
         car:updateDust()
     end
