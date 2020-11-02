@@ -6,6 +6,7 @@ function love.load()
     {
         car01 = Car:New(Vector2:New{x = 50, y = 50}, 1),
         car02 = Car:New(Vector2:New{x = 600, y = 500}, 2),
+        car03 = Car:New(Vector2:New{x = 50, y = 500}, 3),
     }
 
     for _, car in pairs(cars) do
@@ -48,6 +49,9 @@ function love.draw()
 
     for _, car in pairs(cars) do
         car:drawSkidMarks()
+    end
+
+    for _, car in pairs(cars) do
         car:drawDust()
     end
 
